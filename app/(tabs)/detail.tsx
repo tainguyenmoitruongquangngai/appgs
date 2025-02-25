@@ -1,8 +1,7 @@
-
-import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
-import DetailScreen from '@/screens/DetailScreen';
+import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useAuth } from "@/context/AuthContext";
+import DetailScreen from "@/screens/DetailScreen";
 
 export default function Index() {
   const { isLoggedIn } = useAuth();
@@ -16,7 +15,7 @@ export default function Index() {
   useEffect(() => {
     if (isMounted) {
       if (!isLoggedIn) {
-        router.replace('/login');
+        router.replace("/login");
       }
     }
   }, [isMounted, isLoggedIn]);
