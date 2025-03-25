@@ -26,9 +26,11 @@ export default function LoginScreen() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: username, password: password })
       })
-      console.log(response)
+      
+      var data = await response.json();
+      
       if (response.ok == true) {
-          await login(username, password);
+          await login(data);
           router.replace('/(tabs)');
       } else {
         setIsError(true);
