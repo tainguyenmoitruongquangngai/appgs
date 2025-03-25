@@ -2,6 +2,8 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../constants/ApiURL'
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -9,6 +11,7 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false)
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -18,8 +21,18 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      await login(username, password);
-      router.replace('/(tabs)');
+      const response = await fetch([API_BASE_URL]+`/Auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username, password: password })
+      })
+      console.log(response)
+      if (response.ok == true) {
+          await login(username, password);
+          router.replace('/(tabs)');
+      } else {
+        setIsError(true);
+      }
     } catch (error) {
       alert('Đăng nhập thất bại, vui lòng kiểm tra lại!');
     } finally {
@@ -29,15 +42,34 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Đăng nhập</Text>
-      <TextInput style={styles.input} placeholder="Tài khoản" onChangeText={setUsername} value={username} />
-      <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry />
+      <Text style={styles.title}>ĐĂNG NHẬP</Text>
+      <View style={styles.inputContainer}>
+        <Icon name="person-circle-outline" size={25} style={styles.icon} ></Icon>
+        <TextInput style={styles.input} placeholder="Tên đăng nhập" onChangeText={setUsername} value={username} />
+      </View>
+      <View style={styles.inputContainer}>
+        <Icon name="lock-closed-outline" size={25} style={styles.icon} ></Icon>
+        <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry />
+      </View>
+      {isError && (
+        <Text style={styles.alert}>Đăng nhập thất bại, vui lòng kiểm tra lại thông tin!</Text>
+      )}
       <Button title={loading ? 'Đang đăng nhập...' : 'Đăng nhập'} onPress={handleLogin} disabled={loading} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '80%',
+    height: 50,
+    backgroundColor: '#f1f1f1',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -50,12 +82,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: '80%',
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    flex: 1,
+    height: '100%',
+  },
+  alert: {
+    color: "red", 
+    paddingBottom: 10
+  },
+  icon: {
+    marginRight: 10,
   },
 });
