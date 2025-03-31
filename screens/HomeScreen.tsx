@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useEffect } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -12,67 +14,73 @@ export default function HomeScreen() {
   };
 
   return (
+    <>
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>Xin chào!</Text>
+      <TouchableOpacity style={[styles.red, styles.buttonLogout]} onPress={handleLogout}>
+        <Icon name="log-out-outline" style={styles.iconWhite} size={25} ></Icon>
+      </TouchableOpacity>
+    </View>
+
     <View style={styles.container}>
-      <Text style={styles.header}>Trang chủ</Text>
 
       <View style={styles.grid}>
         <TouchableOpacity
-          style={[styles.button, styles.yellow]}
+          style={[styles.button, styles.orange]}
           onPress={() => {}}
         >
-          <Text style={styles.buttonText}>Thu thập</Text>
+          <Icon name="people-outline" style={styles.iconWhite} size={50} ></Icon>
+          <Text style={styles.buttonText}>Tra cứu khách hàng</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.gray]}
           onPress={() => {}}
         >
-          <Text style={styles.buttonText}>Kiểm tra</Text>
+          <Icon name="cloud-upload-outline" style={styles.iconWhite} size={50} ></Icon>
+          <Text style={styles.buttonText}>Truyền số liệu</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.green]}
           onPress={() => {}}
         >
-          <Text style={styles.buttonText}>Ghi chỉ số</Text>
+          <Icon name="search-outline" style={styles.iconWhite} size={50} ></Icon>
+          <Text style={styles.buttonText}>Tra cứu dữ liệu</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.blue]}
           onPress={() => {}}
         >
-          <Text style={styles.buttonText}>Ghi chỉ số trực tuyến</Text>
+          <Icon name="help-circle-outline" style={styles.iconWhite} size={50} ></Icon>
+          <Text style={styles.buttonText}>Trợ giúp</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.darkBlue]}
-          onPress={() => {}}
-        >
-          <Text style={styles.buttonText}>Tra cứu khách hàng</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.red]}
-          onPress={handleLogout}
-        >
-          <Text style={styles.buttonText}>Đăng xuất</Text>
-        </TouchableOpacity>
       </View>
     </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#035291',
+    padding: 10,
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#e2f3ff",
     alignItems: "center",
     justifyContent: "center",
   },
-  header: {
-    fontSize: 24,
+  headerTitle: {
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: '#fff',
   },
   grid: {
     width: "90%",
@@ -82,7 +90,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "48%",
-    padding: 20,
+    padding: 15,
     marginVertical: 8,
     borderRadius: 10,
     alignItems: "center",
@@ -91,7 +99,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  yellow: { backgroundColor: "#F5C518" },
+  buttonLogout: {
+    padding: 10,
+    color: "#fff",
+    fontWeight: "bold",
+    borderRadius: 10,
+  },
+  iconWhite: {
+    color: '#fff'
+  },
+  orange: { backgroundColor: "#e49813" },
   gray: { backgroundColor: "#8E8E93" },
   green: { backgroundColor: "#4CAF50" },
   blue: { backgroundColor: "#2196F3" },

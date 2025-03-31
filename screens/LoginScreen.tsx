@@ -1,9 +1,11 @@
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ImageBackground, Pressable, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../constants/ApiURL'
 import Icon from 'react-native-vector-icons/Ionicons';
+
+const image = {uri: '../assets/images/environment-background.jpg'};
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
@@ -14,11 +16,6 @@ export default function LoginScreen() {
   const [isError, setIsError] = useState(false)
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      alert('Vui lòng nhập tài khoản và mật khẩu!');
-      return;
-    }
-
     setLoading(true);
     try {
       const response = await fetch([API_BASE_URL]+`/Auth/login`, {
@@ -36,32 +33,50 @@ export default function LoginScreen() {
         setIsError(true);
       }
     } catch (error) {
-      alert('Đăng nhập thất bại, vui lòng kiểm tra lại!');
+      setIsError(true)
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ĐĂNG NHẬP</Text>
-      <View style={styles.inputContainer}>
-        <Icon name="person-circle-outline" size={25} style={styles.icon} ></Icon>
-        <TextInput style={styles.input} placeholder="Tên đăng nhập" onChangeText={setUsername} value={username} />
+    <ImageBackground source={require('../assets/images/environmental-protection.jpg')} style={styles.background}>
+      <View style={styles.container}>
+      <Text style={styles.title}>HỆ THỐNG QUẢN LÝ {`\n`}CƠ SỞ DỮ LIỆU TÀI NGUYÊN NƯỚC</Text>
+        <View style={styles.inputContainer}>
+          <Icon name="person-circle-outline" size={25} style={styles.icon} ></Icon>
+          <TextInput style={styles.input} placeholder="Tên đăng nhập" onChangeText={setUsername} value={username} />
+        </View>
+        <View style={styles.inputContainer}>
+          <Icon name="lock-closed-outline" size={25} style={styles.icon} ></Icon>
+          <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry />
+        </View>
+        {isError && (
+          <Text style={styles.alert}>Đăng nhập thất bại, vui lòng kiểm tra lại thông tin!</Text>
+        )}
+        <Pressable style={styles.buttonLogin} onPress={handleLogin} disabled={loading}>
+          
+          { loading ? 
+          <View>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loginText}>Đang đăng nhập...</Text>
+          </View> : 
+          <Text style={styles.loginText}>Đăng nhập</Text> 
+          }
+          
+        </Pressable>
       </View>
-      <View style={styles.inputContainer}>
-        <Icon name="lock-closed-outline" size={25} style={styles.icon} ></Icon>
-        <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry />
-      </View>
-      {isError && (
-        <Text style={styles.alert}>Đăng nhập thất bại, vui lòng kiểm tra lại thông tin!</Text>
-      )}
-      <Button title={loading ? 'Đang đăng nhập...' : 'Đăng nhập'} onPress={handleLogin} disabled={loading} />
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%',
+    backgroundSize: 'cover',
+    backgroundPosition: 'left'
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -76,12 +91,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
+    color: '#035291',
+    textAlign: 'center'
   },
   input: {
     flex: 1,
@@ -89,9 +105,23 @@ const styles = StyleSheet.create({
   },
   alert: {
     color: "red", 
-    paddingBottom: 10
+    paddingBottom: 10,
+    fontWeight: 600
   },
   icon: {
     marginRight: 10,
   },
+  buttonLogin: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#0077df',
+  },
+  loginText: {
+    color: "#fff",
+    fontWeight: 'bold'
+  }
 });
