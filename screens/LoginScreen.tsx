@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, ImageBackground, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ImageBackground, Pressable, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
@@ -10,10 +10,13 @@ const image = {uri: '../assets/images/environment-background.jpg'};
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false)
+
+  const toggleShowPassword = () => setShowPassword(!showPassword);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -49,7 +52,10 @@ export default function LoginScreen() {
         </View>
         <View style={styles.inputContainer}>
           <Icon name="lock-closed-outline" size={25} style={styles.icon} ></Icon>
-          <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry />
+          <TextInput style={styles.input} placeholder="Mật khẩu" onChangeText={setPassword} value={password} secureTextEntry={!showPassword} />
+          <TouchableOpacity onPress={toggleShowPassword}>
+              {showPassword ? <Icon name="eye-off-outline" size={25} style={styles.icon} ></Icon> : <Icon name="eye-outline" size={25} style={styles.icon} ></Icon> }
+          </TouchableOpacity>
         </View>
         {isError && (
           <Text style={styles.alert}>Đăng nhập thất bại, vui lòng kiểm tra lại thông tin!</Text>
@@ -75,7 +81,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundSize: 'cover',
-    backgroundPosition: 'left'
+    backgroundPosition: 'left',
   },
   inputContainer: {
     flexDirection: 'row',

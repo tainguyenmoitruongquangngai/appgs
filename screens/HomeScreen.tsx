@@ -1,16 +1,33 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useEffect } from "react";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    await logout();
-    router.replace("/login");
+    Alert.alert(
+      'THÔNG BÁO',
+      'Bạn thực sự muốn đăng xuất?',
+      [
+        {
+          text: 'HUỶ',
+          style: 'cancel',
+        },
+        {
+          text: 'ĐĂNG XUẤT',
+          onPress: () => {
+            logout();
+            router.replace("/login");
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
+    
   };
 
   return (
@@ -35,7 +52,7 @@ export default function HomeScreen() {
 
         <TouchableOpacity
           style={[styles.button, styles.gray]}
-          onPress={() => {}}
+          onPress={() => {router.replace('/transfer-data')}}
         >
           <Icon name="cloud-upload-outline" style={styles.iconWhite} size={50} ></Icon>
           <Text style={styles.buttonText}>Truyền số liệu</Text>
