@@ -65,7 +65,6 @@ export default function LoginScreen() {
           { loading ? 
           <View>
             <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loginText}>Đang đăng nhập...</Text>
           </View> : 
           <Text style={styles.loginText}>Đăng nhập</Text> 
           }
