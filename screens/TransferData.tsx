@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, Button, StyleSheet, TouchableOpacity
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import Icon from 'react-native-vector-icons/Ionicons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const factors = [
   "MUATHUONGLUU", "THUONGLUU", "HALUU", "DUNGTICH", "QDEN", "QUATRAN",
@@ -12,7 +13,17 @@ const factors = [
 export default function DataInputForm() {
   const [projectName, setProjectName] = useState('');
   const [datetime, setDatetime] = useState(new Date());
-  const [isDatePickerVisible, setDatePickerVisible] = useState(true);
+  const [dateShow, setDateShow] = useState(false);
+  
+  const onChangeDate = (event:any, selectedDate:any) => {
+    const currentDate = selectedDate;
+    setDatetime(currentDate);
+    setDateShow(false);
+  };
+
+  const showDateMode = () => {
+    setDateShow(true);
+  };
 
   const [dataRows, setDataRows] = useState(
     Array.from({ length: 11 }, (_, index) => ({
@@ -21,11 +32,6 @@ export default function DataInputForm() {
       unit: '',
     }))
   );
-
-  const handleDateConfirm = (date: Date) => {
-    setDatetime(date);
-    setDatePickerVisible(false);
-  };
 
   const handleChange = (index: number, field: string, value: string) => {
     const newData = [...dataRows];
@@ -65,9 +71,6 @@ export default function DataInputForm() {
           <Icon name="arrow-back-outline" style={styles.iconWhite} size={25} ></Icon>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nhập số liệu vận hành</Text>
-        <TouchableOpacity style={[styles.red, styles.buttonLogout]} onPress={handleLogout}>
-          <Icon name="log-out-outline" style={styles.iconWhite} size={25} ></Icon>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.container}>
@@ -81,10 +84,28 @@ export default function DataInputForm() {
       />
 
       {/* Thời gian nhập dữ liệu */}
-      <Text style={styles.label}>Thời gian nhập dữ liệu</Text>
-      <TouchableOpacity onPress={() => setDatePickerVisible(true)} style={styles.datetimeButton}>
-        <Text>{datetime.toLocaleString()}</Text>
-      </TouchableOpacity>
+      <View style={styles.row}>
+        <Text style={styles.label}>Chọn thời gian nhập dữ liệu:</Text>
+        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
+          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
+          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
+        </TouchableOpacity>
+      </View>
+
+
+      <Text>Thời gian nhập dữ liệu: {datetime.toLocaleString()}</Text>
+
+      {dateShow && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={datetime}
+          mode='date'
+          is24Hour={true}
+          onChange={onChangeDate}
+        />
+      )}
 
       {/* Form 12 hàng */}
       <Text style={styles.label}>Dữ liệu quan trắc</Text>
