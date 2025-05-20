@@ -60,7 +60,7 @@ export default function HomeScreen() {
 
         <TouchableOpacity
           style={[styles.button, styles.green]}
-          onPress={() => {}}
+          onPress={() => {router.replace('/get-data')}}
         >
           <Icon name="search-outline" style={styles.iconWhite} size={50} ></Icon>
           <Text style={styles.buttonText}>Tra cứu dữ liệu</Text>

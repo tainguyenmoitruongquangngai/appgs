@@ -10,7 +10,7 @@ const factors = [
   "NHAMAY", "DCTT", "LUULUONGHADU", "DUKIENLUULUONGHADU", "MUCNUOCHODUKIEN12GIO"
 ];
 
-export default function TransferData() {
+export default function GetData() {
   const [projectName, setProjectName] = useState('');
   const [datetime, setDatetime] = useState(new Date());
   const [dateShow, setDateShow] = useState(false);
@@ -70,7 +70,7 @@ export default function TransferData() {
         <TouchableOpacity style={[styles.buttonLogout]} onPress={() => router.replace('/')}>
           <Icon name="arrow-back-outline" style={styles.iconWhite} size={25} ></Icon>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Nhập số liệu vận hành</Text>
+        <Text style={styles.headerTitle}>Số liệu vận hành</Text>
       </View>
 
       <View style={styles.container}>

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Địa chỉ API gốc (có thể thay đổi dựa trên môi trường)
-const API_BASE_URL = 'https://api.tainguyenmoitruongquangngai.vn';
+import { API_BASE_URL } from './constants/ApiURL';
 
 // Hàm gọi API đăng nhập
 export const loginApi = async (username: string, password: string) => {
