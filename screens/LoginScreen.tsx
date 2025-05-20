@@ -45,7 +45,7 @@ export default function LoginScreen() {
   return (
     <ImageBackground source={require('../assets/images/environmental-protection.jpg')} style={styles.background}>
       <View style={styles.container}>
-      <Text style={styles.title}>HỆ THỐNG QUẢN LÝ {`\n`}CƠ SỞ DỮ LIỆU TÀI NGUYÊN NƯỚC</Text>
+      <Text style={styles.title}>HỆ THỐNG QUẢN TRỊ {`\n`}DỮ LIỆU NÔNG NGHIỆP VÀ MÔI TRƯỜNG</Text>
         <View style={styles.inputContainer}>
           <Icon name="person-circle-outline" size={25} style={styles.icon} ></Icon>
           <TextInput style={styles.input} placeholder="Tên đăng nhập" onChangeText={setUsername} value={username} />
