@@ -2,22 +2,47 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextProps {
   isLoggedIn: boolean | null;
-  login: (token: string) => void
+  login: (token: string) => void;
   logout: () => Promise<void>;
+  userInfo: () => UserInfo | { id: null; userName: null; role: null };
+}
+
+export interface UserInfo {
+  id: string // Id nguoi dung
+  userName: string // Ten dang nhap
+  role: string // Vai tro
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  // const [token, setToken] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return !!Cookies.get('authToken')
   })
 
-  const getToken = useCallback(() => Cookies.get('authToken') || null, [])
+  const getToken = useCallback(() => Cookies.get('authToken') || null, []);
+
+  const userInfo = useCallback(() => {
+    const token = getToken();
+    if (!token) {
+      return { id: null, userName: null, role: null };
+    }
+    try {
+      const decoded = jwtDecode(token) as { [key: string]: any };
+      return {
+        id: decoded['id'],
+        userName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+      };
+    } catch (err) {
+      console.error('Failed to decode user info:', err);
+      return { id: null, userName: null, role: null };
+    }
+  }, [getToken]);
 
   const router = useRouter();
 
@@ -53,7 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [router])
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, userInfo }}>
       {children}
     </AuthContext.Provider>
   );
