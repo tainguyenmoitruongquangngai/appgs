@@ -75,13 +75,10 @@ export default function TransferData() {
 
       <View style={styles.container}>
         {/* Tên công trình */}
-      <Text style={styles.label}>Tên công trình</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập tên công trình"
-        value={projectName}
-        onChangeText={setProjectName}
-      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+        <Text style={styles.label}>Tên công trình: </Text>
+        <Text>Thuỷ điện DakDrinh</Text>
+      </View>
 
       {/* Thời gian nhập dữ liệu */}
       <View style={styles.row}>
@@ -153,8 +150,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: '600',
-    marginTop: 16,
-    marginBottom: 6,
+    paddingBottom: 8,
   },
   input: {
     borderWidth: 1,

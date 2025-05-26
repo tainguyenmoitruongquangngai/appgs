@@ -5,40 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import Icon from 'react-native-vector-icons/Ionicons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const factors = [
-  "MUATHUONGLUU", "THUONGLUU", "HALUU", "DUNGTICH", "QDEN", "QUATRAN",
-  "NHAMAY", "DCTT", "LUULUONGHADU", "DUKIENLUULUONGHADU", "MUCNUOCHODUKIEN12GIO"
-];
-
 export default function GetData() {
-  const [projectName, setProjectName] = useState('');
-  const [datetime, setDatetime] = useState(new Date());
-  const [dateShow, setDateShow] = useState(false);
-  
-  const onChangeDate = (event:any, selectedDate:any) => {
-    const currentDate = selectedDate;
-    setDatetime(currentDate);
-    setDateShow(false);
-  };
-
-  const showDateMode = () => {
-    setDateShow(true);
-  };
-
-  const [dataRows, setDataRows] = useState(
-    Array.from({ length: 11 }, (_, index) => ({
-      factor: factors[index % factors.length],
-      value: '',
-      unit: '',
-    }))
-  );
-
-  const handleChange = (index: number, field: string, value: string) => {
-    const newData = [...dataRows];
-    newData[index][field as 'factor' | 'value' | 'unit'] = value;
-    setDataRows(newData);
-  };
-
   const router = useRouter();
   const { logout } = useAuth();
 
@@ -71,71 +38,6 @@ export default function GetData() {
           <Icon name="arrow-back-outline" style={styles.iconWhite} size={25} ></Icon>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Số liệu vận hành</Text>
-      </View>
-
-      <View style={styles.container}>
-        {/* Tên công trình */}
-      <Text style={styles.label}>Tên công trình</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập tên công trình"
-        value={projectName}
-        onChangeText={setProjectName}
-      />
-
-      {/* Thời gian nhập dữ liệu */}
-      <View style={styles.row}>
-        <Text style={styles.label}>Chọn thời gian nhập dữ liệu:</Text>
-        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
-          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
-          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
-        </TouchableOpacity>
-      </View>
-
-
-      <Text>Thời gian nhập dữ liệu: {datetime.toLocaleString()}</Text>
-
-      {dateShow && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={datetime}
-          mode='date'
-          is24Hour={true}
-          onChange={onChangeDate}
-        />
-      )}
-
-      {/* Form 12 hàng */}
-      <Text style={styles.label}>Dữ liệu quan trắc</Text>
-      {dataRows.map((row, index) => (
-        <View key={index} style={styles.row}>
-          <TextInput
-            style={[styles.input, { flex: 1.3 }]}
-            placeholder="Yếu tố"
-            value={row.factor}
-            onChangeText={(text) => handleChange(index, 'factor', text)}
-            editable={false}
-          />
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Giá trị"
-            keyboardType="numeric"
-            value={row.value}
-            onChangeText={(text) => handleChange(index, 'value', text)}
-          />
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Đơn vị"
-            value={row.unit}
-            onChangeText={(text) => handleChange(index, 'unit', text)}
-          />
-        </View>
-      ))}
-
-      {/* Gửi dữ liệu */}
-      <Button title="Gửi dữ liệu" onPress={() => console.log({ projectName, datetime, dataRows })} />
       </View>
     </ScrollView>
   );

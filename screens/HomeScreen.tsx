@@ -44,10 +44,10 @@ export default function HomeScreen() {
       <View style={styles.grid}>
         <TouchableOpacity
           style={[styles.button, styles.orange]}
-          onPress={() => {}}
+          onPress={() => {router.replace('/get-info')}}
         >
           <Icon name="people-outline" style={styles.iconWhite} size={50} ></Icon>
-          <Text style={styles.buttonText}>Tra cứu khách hàng</Text>
+          <Text style={styles.buttonText}>Tra cứu thông tin</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
