@@ -156,15 +156,16 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tableData: {
-    width: '80%',
+    width: '90%',
   },
   headerRow: {
     backgroundColor: '#cec',
-    width: '80%',
+    width: '90%',
   },
   cell: {
     flex: 1,
     paddingHorizontal: 5,
+    textAlign: 'center',
   },
   headerText: {
     fontWeight: 'bold',

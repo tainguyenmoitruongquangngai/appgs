@@ -1,198 +1,149 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import Icon from 'react-native-vector-icons/Ionicons';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useRouter } from "expo-router";
 
 const factors = [
   "MUATHUONGLUU", "THUONGLUU", "HALUU", "DUNGTICH", "QDEN", "QUATRAN",
   "NHAMAY", "DCTT", "LUULUONGHADU", "DUKIENLUULUONGHADU", "MUCNUOCHODUKIEN12GIO"
 ];
 
+const units = [
+  "mm", "m", "m", "trieum3", "m3/s", "m3/s", "m3/s", "m3/s", "m3/s", "m3/s", "m"
+];
+
 export default function TransferData() {
-  const [projectName, setProjectName] = useState('');
   const [datetime, setDatetime] = useState(new Date());
-  const [dateShow, setDateShow] = useState(false);
-  
+  const [showDate, setShowDate] = useState(false);
+  const [values, setValues] = useState(Array(11).fill(''));
+
   const onChangeDate = (event:any, selectedDate:any) => {
-    const currentDate = selectedDate;
-    setDatetime(currentDate);
-    setDateShow(false);
+    if (selectedDate) setDatetime(selectedDate);
+    setShowDate(false);
   };
 
-  const showDateMode = () => {
-    setDateShow(true);
+  const handleValueChange = (index:any, value:any) => {
+    const newValues = [...values];
+    newValues[index] = value.replace(/[^0-9.]/g, '');
+    setValues(newValues);
   };
 
-  const [dataRows, setDataRows] = useState(
-    Array.from({ length: 11 }, (_, index) => ({
-      factor: factors[index % factors.length],
-      value: '',
-      unit: '',
-    }))
-  );
-
-  const handleChange = (index: number, field: string, value: string) => {
-    const newData = [...dataRows];
-    newData[index][field as 'factor' | 'value' | 'unit'] = value;
-    setDataRows(newData);
+  const handleSubmit = () => {
+    // Xử lý gửi dữ liệu ở đây
+    console.log({
+      datetime,
+      data: factors.map((factor, i) => ({
+        factor,
+        value: values[i],
+        unit: units[i]
+      }))
+    });
   };
 
   const router = useRouter();
-  const { logout } = useAuth();
-
-  const handleLogout = async () => {
-    Alert.alert(
-      'THÔNG BÁO',
-      'Bạn thực sự muốn đăng xuất?',
-      [
-        {
-          text: 'HUỶ',
-          style: 'cancel',
-        },
-        {
-          text: 'ĐĂNG XUẤT',
-          onPress: () => {
-            logout();
-            router.replace("/login");
-          },
-          style: 'destructive',
-        },
-      ],
-      { cancelable: true }
-    );
-  };
 
   return (
-    <ScrollView>
+    <ScrollView >
       <View style={styles.header}>
-        <TouchableOpacity style={[styles.buttonLogout]} onPress={() => router.replace('/')}>
+        <TouchableOpacity style={[styles.buttonBack]} onPress={() => router.replace('/')}>
           <Icon name="arrow-back-outline" style={styles.iconWhite} size={25} ></Icon>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nhập số liệu vận hành</Text>
       </View>
-
       <View style={styles.container}>
-        {/* Tên công trình */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
-        <Text style={styles.label}>Tên công trình: </Text>
-        <Text>Thuỷ điện DakDrinh</Text>
-      </View>
+        <Text style={styles.label}>Tên công trình:</Text>
+        <TextInput style={[styles.input, { flex: 1 }]} />
 
-      {/* Thời gian nhập dữ liệu */}
-      <View style={styles.row}>
-        <Text style={styles.label}>Chọn thời gian nhập dữ liệu:</Text>
-        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
-          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
+        <Text style={styles.label}>Thời gian nhập dữ liệu:</Text>
+        <TouchableOpacity onPress={() => setShowDate(true)} style={styles.datetimeButton}>
+          <Text>{datetime.toLocaleString()}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={showDateMode} style={styles.datetimeButton}>
-          <Icon name="calendar-outline" style={styles.iconWhite} size={25} ></Icon>
-        </TouchableOpacity>
-      </View>
-
-
-      <Text>Thời gian nhập dữ liệu: {datetime.toLocaleString()}</Text>
-
-      {dateShow && (
+      
+      {showDate && (
         <DateTimePicker
-          testID="dateTimePicker"
           value={datetime}
-          mode='date'
-          is24Hour={true}
+          mode="datetime"
+          display="default" // hoặc "calendar", "default"
           onChange={onChangeDate}
         />
       )}
-
-      {/* Form 12 hàng */}
-      <Text style={styles.label}>Dữ liệu quan trắc</Text>
-      {dataRows.map((row, index) => (
-        <View key={index} style={styles.row}>
+      <Text style={styles.label}>Dữ liệu quan trắc:</Text>
+      {factors.map((factor, i) => (
+        <View key={factor} style={styles.dataRow}>
           <TextInput
-            style={[styles.input, { flex: 1.3 }]}
-            placeholder="Yếu tố"
-            value={row.factor}
-            onChangeText={(text) => handleChange(index, 'factor', text)}
+            style={[styles.input, { flex: 1.5, backgroundColor: '#eee' }]}
+            value={factor}
             editable={false}
           />
           <TextInput
             style={[styles.input, { flex: 1 }]}
             placeholder="Giá trị"
             keyboardType="numeric"
-            value={row.value}
-            onChangeText={(text) => handleChange(index, 'value', text)}
+            value={values[i]}
+            onChangeText={text => handleValueChange(i, text)}
           />
           <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Đơn vị"
-            value={row.unit}
-            onChangeText={(text) => handleChange(index, 'unit', text)}
+            style={[styles.input, { flex: 1, backgroundColor: '#eee' }]}
+            value={units[i]}
+            editable={false}
           />
         </View>
       ))}
-
-      {/* Gửi dữ liệu */}
-      <Button title="Gửi dữ liệu" onPress={() => console.log({ projectName, datetime, dataRows })} />
+      <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmit}>
+        <Text style={{ color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>GỬI DỮ LIỆU</Text>
+      </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 40,
+  container: { backgroundColor: '#fff', padding: 16 },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
+  label: { fontWeight: '600', marginBottom: 8, marginTop: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
+  datetimeButton: {
+    borderWidth: 1,
+    borderColor: '#aaa',
+    padding: 8,
+    borderRadius: 6,
+    backgroundColor: '#eee',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  label: {
-    fontWeight: '600',
-    paddingBottom: 8,
-  },
+  dataRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
   input: {
     borderWidth: 1,
     borderColor: '#aaa',
     padding: 8,
     borderRadius: 6,
-    marginBottom: 8,
     backgroundColor: '#fff',
   },
-  row: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 8,
-  },
-  datetimeButton: {
-    borderWidth: 1,
-    borderColor: '#aaa',
-    padding: 12,
-    borderRadius: 6,
-    backgroundColor: '#eee',
-    alignItems: 'center',
-  },
-  header: {
+    header: {
     backgroundColor: '#035291',
     padding: 10,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'flex-end',
+    height: 90,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: '#fff',
   },
-  buttonLogout: {
+  buttonBack: {
     padding: 10,
     color: "#fff",
     fontWeight: "bold",
     borderRadius: 10,
-  },
+  }, 
   iconWhite: {
     color: '#fff'
   },
-  red: { backgroundColor: "#D32F2F" },
+  buttonSubmit: {
+    backgroundColor: '#035291',
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 16,
+  },
 });

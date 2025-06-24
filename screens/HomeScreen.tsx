@@ -13,11 +13,11 @@ export default function HomeScreen() {
       'Bạn thực sự muốn đăng xuất?',
       [
         {
-          text: 'HUỶ',
+          text: 'Huỷ',
           style: 'cancel',
         },
         {
-          text: 'ĐĂNG XUẤT',
+          text: 'Đăng xuất',
           onPress: () => {
             logout();
             router.replace("/login");
@@ -86,7 +86,8 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'flex-end',
+    height: 90,
   },
   container: {
     flex: 1,
