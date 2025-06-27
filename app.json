@@ -1,21 +1,31 @@
 {
   "expo": {
-    "name": "gstnmt-qn",
-    "slug": "gstnmt-qn",
+    "name": "Hệ thống Quản trị Dữ liệu",
+    "slug": "tnmt-qng-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "gstnmt-qn",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.gstnmt.qn",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "CFBundleDisplayName": "Hệ thống Quản trị Dữ liệu",
+        "NSCameraUsageDescription": "Ứng dụng cần quyền truy cập camera để chụp ảnh.",
+        "NSPhotoLibraryUsageDescription": "Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh.",
+        "NSLocationWhenInUseUsageDescription": "Ứng dụng cần quyền truy cập vị trí để xác định vị trí công trình.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.gstnmt.qn"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +48,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "60fdbddb-8469-4085-83e0-0a4770eca1cf"
+      }
+    },
+    "owner": "ctcpnguonnuocvamoitruong"
   }
 }
