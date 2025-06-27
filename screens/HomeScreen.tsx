@@ -1,135 +1,176 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  StatusBar,
+  RefreshControl,
+} from "react-native";
 import { useRouter } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
-import Icon from 'react-native-vector-icons/Ionicons';
+import { useAuth } from "../context/AuthContext";
+import { AppHeader } from "../components/AppHeader";
+import { IconActionCard } from "../components/IconActionCard";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { getUserInfo, logout, isLoading } = useAuth();
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadUserInfo();
+  }, []);
+
+  const loadUserInfo = async () => {
+    try {
+      const info = await getUserInfo();
+      setUserInfo(info);
+    } catch (error) {
+      console.error("Error loading user info:", error);
+    }
+  };
 
   const handleLogout = async () => {
     Alert.alert(
-      'THÔNG BÁO',
-      'Bạn thực sự muốn đăng xuất?',
+      "THÔNG BÁO",
+      "Bạn thực sự muốn đăng xuất?",
       [
         {
-          text: 'Huỷ',
-          style: 'cancel',
+          text: "Huỷ",
+          style: "cancel",
         },
         {
-          text: 'Đăng xuất',
-          onPress: () => {
-            logout();
-            router.replace("/login");
+          text: "Đăng xuất",
+          onPress: async () => {
+            await logout();
           },
-          style: 'destructive',
+          style: "destructive",
         },
       ],
       { cancelable: true }
     );
-    
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadUserInfo();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1000);
+  };
+
+  if (isLoading) {
+    return <LoadingScreen message="Đang tải..." />;
+  }
+
   return (
-    <>
-    <View style={styles.header}>
-      <Text style={styles.headerTitle}>Xin chào!</Text>
-      <TouchableOpacity style={[styles.red, styles.buttonLogout]} onPress={handleLogout}>
-        <Icon name="log-out-outline" style={styles.iconWhite} size={25} ></Icon>
-      </TouchableOpacity>
-    </View>
-
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#007AFF" />
 
-      <View style={styles.grid}>
-        <TouchableOpacity
-          style={[styles.button, styles.orange]}
-          onPress={() => {router.replace('/get-info')}}
-        >
-          <Icon name="people-outline" style={styles.iconWhite} size={50} ></Icon>
-          <Text style={styles.buttonText}>Tra cứu thông tin</Text>
-        </TouchableOpacity>
+      <AppHeader
+        title={`Xin chào, ${userInfo?.userName || "User"}!`}
+        subtitle="Hệ thống giám sát môi trường"
+        onRightPress={handleLogout}
+        rightIcon="log-out-outline"
+      />
 
-        <TouchableOpacity
-          style={[styles.button, styles.gray]}
-          onPress={() => {router.replace('/transfer-data')}}
-        >
-          <Icon name="cloud-upload-outline" style={styles.iconWhite} size={50} ></Icon>
-          <Text style={styles.buttonText}>Truyền số liệu</Text>
-        </TouchableOpacity>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {/* Hành động nhanh */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Hành động nhanh</Text>
 
-        <TouchableOpacity
-          style={[styles.button, styles.green]}
-          onPress={() => {router.replace('/get-data')}}
-        >
-          <Icon name="search-outline" style={styles.iconWhite} size={50} ></Icon>
-          <Text style={styles.buttonText}>Tra cứu dữ liệu</Text>
-        </TouchableOpacity>
+          <View style={styles.actionGrid}>
+            <View style={styles.actionRow}>
+              <IconActionCard
+                title="Thông tin công trình"
+                icon="people-outline"
+                color="#e49813"
+                onPress={() => router.push("/get-info")}
+              />
+              <View style={styles.actionSpacing} />
+              <IconActionCard
+                title="Truyền số liệu"
+                icon="cloud-upload-outline"
+                color="#8E8E93"
+                onPress={() => router.push("/transfer-data")}
+              />
+            </View>
 
-        <TouchableOpacity
-          style={[styles.button, styles.blue]}
-          onPress={() => {}}
-        >
-          <Icon name="help-circle-outline" style={styles.iconWhite} size={50} ></Icon>
-          <Text style={styles.buttonText}>Trợ giúp</Text>
-        </TouchableOpacity>
-
-      </View>
+            <View style={styles.actionRow}>
+              <IconActionCard
+                title="Tra cứu dữ liệu"
+                icon="search-outline"
+                color="#4CAF50"
+                onPress={() => router.push("/get-data")}
+              />
+              <View style={styles.actionSpacing} />
+              <IconActionCard
+                title="Trợ giúp"
+                icon="help-circle-outline"
+                color="#2196F3"
+                onPress={() =>
+                  Alert.alert("Thông báo", "Tính năng đang phát triển")
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     </View>
-    </>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#035291',
-    padding: 10,
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    height: 90,
-  },
   container: {
     flex: 1,
-    backgroundColor: "#e2f3ff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#f8f9fa",
   },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: '#fff',
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 16,
   },
-  grid: {
-    width: "90%",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  button: {
-    width: "48%",
-    padding: 15,
+  section: {
+    backgroundColor: "#fff",
     marginVertical: 8,
-    borderRadius: 10,
-    alignItems: "center",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#1a1a1a",
+    marginBottom: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 2,
+    borderBottomColor: "#007AFF",
   },
-  buttonLogout: {
-    padding: 10,
-    color: "#fff",
-    fontWeight: "bold",
-    borderRadius: 10,
+  actionGrid: {
+    width: "100%",
+    gap: 16,
   },
-  iconWhite: {
-    color: '#fff'
+  actionRow: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    width: "100%",
   },
-  orange: { backgroundColor: "#e49813" },
-  gray: { backgroundColor: "#8E8E93" },
-  green: { backgroundColor: "#4CAF50" },
-  blue: { backgroundColor: "#2196F3" },
-  darkBlue: { backgroundColor: "#1565C0" },
-  red: { backgroundColor: "#D32F2F" },
+  actionSpacing: {
+    width: 16,
+  },
 });

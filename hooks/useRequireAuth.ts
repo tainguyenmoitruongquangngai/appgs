@@ -1,18 +1,19 @@
 // hooks/useRequireAuth.ts
-import { useEffect } from 'react';
-import { useRouter } from 'expo-router';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect } from "react";
+import { useRouter } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 
 export const useRequireAuth = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    // Chờ cho đến khi kiểm tra auth hoàn thành
+    if (!isLoading && isLoggedIn === false) {
       // Nếu chưa đăng nhập, chuyển hướng đến trang Login
-      router.push('/login');
+      router.replace("/login");
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, isLoading, router]);
 
-  return isLoggedIn;
+  return { isLoggedIn, isLoading };
 };

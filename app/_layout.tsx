@@ -11,12 +11,34 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import { ApiContextProvider } from "../context/ApiContext";
+import { LoadingScreen } from "../components/LoadingScreen";
 import "react-native-gesture-handler";
-
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Component con để sử dụng useAuth hook
+function AppStack() {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return <LoadingScreen message="Đang kiểm tra đăng nhập..." />;
+  }
+
+  return (
+    <Stack initialRouteName="login">
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="transfer-data" options={{ headerShown: false }} />
+      <Stack.Screen name="get-info" options={{ headerShown: false }} />
+      <Stack.Screen name="get-data" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -25,8 +47,6 @@ export default function RootLayout() {
   });
 
   const [isReady, setIsReady] = useState(false);
-
-  const pathname = usePathname(); // Lấy đường dẫn hiện tại
 
   useEffect(() => {
     if (loaded) {
@@ -41,17 +61,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <Stack initialRouteName="login">
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="transfer-data" options={{ headerShown: false }} />
-          <Stack.Screen name="get-info" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </AuthProvider>
+      <ApiContextProvider>
+        <AuthProvider>
+          <AppStack />
+          <StatusBar style="auto" />
+        </AuthProvider>
+      </ApiContextProvider>
     </ThemeProvider>
   );
 }

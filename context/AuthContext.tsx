@@ -1,84 +1,127 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
-import { useRouter } from 'expo-router';
-import Cookies from 'js-cookie';
-import { jwtDecode } from 'jwt-decode';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
+import { useRouter } from "expo-router";
+import { jwtDecode } from "jwt-decode";
+import { authService } from "../api/authService";
 
 interface AuthContextProps {
   isLoggedIn: boolean | null;
-  login: (token: string) => void;
+  isLoading: boolean;
+  login: (token: string) => Promise<void>;
   logout: () => Promise<void>;
-  userInfo: () => UserInfo | { id: null; userName: null; role: null };
+  getUserInfo: () => Promise<
+    UserInfo | { id: null; userName: null; role: null }
+  >;
+  checkAuthStatus: () => Promise<void>;
 }
 
 export interface UserInfo {
-  id: string // Id nguoi dung
-  userName: string // Ten dang nhap
-  role: string // Vai tro
+  id: string; // Id nguoi dung
+  userName: string; // Ten dang nhap
+  role: string; // Vai tro
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
-    return !!Cookies.get('authToken')
-  })
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
 
-  const getToken = useCallback(() => Cookies.get('authToken') || null, []);
-
-  const userInfo = useCallback(() => {
-    const token = getToken();
-    if (!token) {
-      return { id: null, userName: null, role: null };
-    }
+  const getToken = useCallback(async () => {
     try {
+      return await AsyncStorage.getItem("authToken");
+    } catch (error) {
+      console.error("Error getting token:", error);
+      return null;
+    }
+  }, []);
+
+  const getUserInfo = useCallback(async (): Promise<
+    UserInfo | { id: null; userName: null; role: null }
+  > => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        return { id: null, userName: null, role: null };
+      }
       const decoded = jwtDecode(token) as { [key: string]: any };
       return {
-        id: decoded['id'],
-        userName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-        role: decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+        id: decoded["id"],
+        userName:
+          decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+        role: decoded[
+          "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        ],
       };
     } catch (err) {
-      console.error('Failed to decode user info:', err);
+      console.error("Failed to decode user info:", err);
       return { id: null, userName: null, role: null };
     }
   }, [getToken]);
 
-  const router = useRouter();
-
-  useEffect(() => {
-
+  const checkAuthStatus = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const isAuthenticated = await authService.isAuthenticated();
+      setIsLoggedIn(isAuthenticated);
+    } catch (error) {
+      console.error("Error checking auth status:", error);
+      setIsLoggedIn(false);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const login = useCallback(
-    (token: string) => {
-      // Cookie settings based on environment
-      const cookieOptions = {
-        expires: 7,
-        // Set secure flag if not in development
-        secure: process.env.NODE_ENV !== 'development',
-        sameSite: 'strict' as const
-      }
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
-      Cookies.set('authToken', token, cookieOptions)
-      setIsLoggedIn(true)
-    },
-    []
-  )
+  const login = useCallback(async (token: string) => {
+    try {
+      await AsyncStorage.setItem("authToken", token);
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.error("Error saving token:", error);
+      throw error;
+    }
+  }, []);
 
   const logout = useCallback(async () => {
     try {
-      Cookies.remove('authToken')
-      setIsLoggedIn(false)
-      await router.replace('/login')
+      setIsLoading(true);
+      await authService.logout();
+      setIsLoggedIn(false);
+      await router.replace("/login");
     } catch (err) {
-      console.error('Logout error:', err)
-      router.replace('/login')
+      console.error("Logout error:", err);
+      // Even if logout fails, clear local state and redirect
+      await AsyncStorage.removeItem("authToken");
+      setIsLoggedIn(false);
+      await router.replace("/login");
+    } finally {
+      setIsLoading(false);
     }
-  }, [router])
+  }, [router]);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, userInfo }}>
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        isLoading,
+        login,
+        logout,
+        getUserInfo,
+        checkAuthStatus,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -87,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth phải được sử dụng trong AuthProvider');
+    throw new Error("useAuth phải được sử dụng trong AuthProvider");
   }
   return context;
 };
