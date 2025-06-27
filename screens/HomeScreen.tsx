@@ -108,9 +108,9 @@ export default function HomeScreen() {
             <View style={styles.actionRow}>
               <IconActionCard
                 title="Tra cứu dữ liệu"
-                icon="search-outline"
+                icon="analytics-outline"
                 color="#4CAF50"
-                onPress={() => router.push("/get-data")}
+                onPress={() => router.push("/data-inquiry")}
               />
               <View style={styles.actionSpacing} />
               <IconActionCard

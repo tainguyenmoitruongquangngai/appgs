@@ -41,7 +41,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="detail"
           options={{
-            title: "Thông tin cá nhân",
+            title: "Thông tin tài khoản",
             tabBarIcon: ({ color }) => (
               <IconSymbol size={28} name="person.fill" color={color} />
             ),

@@ -1,5 +1,5 @@
-import DetailScreen from "../../screens/UserInfo";
+import UserInfoScreen from "../../screens/UserInfo";
 
-export default function Detail() {
-  return <DetailScreen />;
+export default function UserInfo() {
+  return <UserInfoScreen />;
 }

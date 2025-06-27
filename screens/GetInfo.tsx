@@ -19,11 +19,7 @@ import { QuickActionCard } from "../components/QuickActionCard";
 import { EmptyState } from "../components/EmptyState";
 import { LoadingScreen } from "../components/LoadingScreen";
 import Icon from "react-native-vector-icons/Ionicons";
-import {
-  dataTransmissionService,
-  CT_ThongTinDto,
-  BusinessConstructionDto,
-} from "../api/index";
+import { dataTransmissionService, BusinessConstructionDto } from "../api/index";
 
 const { width } = Dimensions.get("window");
 
