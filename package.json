@@ -12,7 +12,14 @@
     "lint": "expo lint",
     "build:ios": "eas build --platform ios --profile production",
     "build:ios-preview": "eas build --platform ios --profile preview",
-    "submit:ios": "eas submit --platform ios"
+    "build:android": "eas build --platform android --profile preview",
+    "build:android-store": "eas build --platform android --profile production",
+    "build:android-apk": "eas build --platform android --profile production-apk",
+    "build:quick": "node scripts/build-android.js apk",
+    "build:store": "node scripts/build-android.js aab",
+    "build:check": "eas build:list --platform android --limit 5",
+    "submit:ios": "eas submit --platform ios",
+    "submit:android": "eas submit --platform android"
   },
   "jest": {
     "preset": "jest-expo"
@@ -40,8 +47,8 @@
     "expo-web-browser": "~14.1.6",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-native": "0.79.2",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-reanimated": "~3.17.4",
@@ -58,10 +65,8 @@
     "@types/jwt-decode": "^3.1.0",
     "@types/react": "~19.0.10",
     "@types/react-native-vector-icons": "^6.4.18",
-    "@types/react-test-renderer": "^18.3.0",
     "jest": "^29.2.1",
     "jest-expo": "~53.0.5",
-    "react-test-renderer": "18.3.1",
     "typescript": "~5.8.3"
   },
   "private": true
